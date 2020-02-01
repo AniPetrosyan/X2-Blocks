@@ -22,6 +22,10 @@ export class Board extends Phaser.GameObjects.Container {
     const rndJ = Math.floor(Math.random() * BOARD_DIMENSIONS.height);
     const rndCell = this._cells[rndI][rndJ];
 
+    if (!rndCell.isEmpty) {
+      return this.getRandomEmptyCell();
+    }
+
     return rndCell;
   }
 
