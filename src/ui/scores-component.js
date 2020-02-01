@@ -1,7 +1,7 @@
 export class ScoresComponent extends Phaser.GameObjects.Container {
   constructor(scene) {
     super(scene);
-    this._build();
+    // this._build();
   }
 
   get score() {

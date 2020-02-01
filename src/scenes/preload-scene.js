@@ -1,4 +1,4 @@
-import { SceneNames, TEXTURE } from "../constants";
+import { SceneNames } from "../constants";
 
 export class PreloadScene extends Phaser.Scene {
   preload() {
@@ -7,7 +7,7 @@ export class PreloadScene extends Phaser.Scene {
 
   create() {
     this.load.path = "./src/assets/";
-    this.load.atlas(TEXTURE, "atlases/main.png", "atlases/main.json");
+    // this.load.atlas(TEXTURE, "atlases/main.png", "atlases/main.json");
     this.load.on("progress", this._onFileLoadComplete, this);
     this.load.on("complete", this._onLoadComplete, this);
     this.load.start();
