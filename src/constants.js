@@ -6,6 +6,6 @@ export const SceneNames = {
 export const TEXTURE = "mainAtlas";
 
 export const BOARD_DIMENSIONS = Object.freeze({
-  width: 10,
-  height: 10
+  width: 5,
+  height: 7
 });
