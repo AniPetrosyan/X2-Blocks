@@ -18,15 +18,10 @@ export class UI extends Phaser.GameObjects.Container {
 
   _build() {
     this._buildScoresComponent();
-    this._buildHighScoresComponent();
   }
 
   _buildScoresComponent() {
     this._scores = new ScoresComponent(this.scene);
     this.add(this._scores);
-  }
-
-  _buildHighScoresComponent() {
-    //
   }
 }
