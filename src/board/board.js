@@ -17,7 +17,7 @@ export class Board extends Phaser.GameObjects.Container {
   _buildBg() {
     const gr = this.scene.add.graphics();
     gr.lineStyle(3, 0xc4eac8, 0.9);
-    gr.strokeRoundedRect(0, 0, 260, 364, 10);
+    gr.strokeRoundedRect(0, 0, 300, 400, 10);
     this.add(gr);
   }
 
@@ -31,7 +31,7 @@ export class Board extends Phaser.GameObjects.Container {
         this.add(cell);
         column.push(cell);
         const { width, height } = cell;
-        cell.setPosition(col * (width + gap), row * (height + gap));
+        cell.setPosition(col * (width + gap) + 20, row * (height + gap) + 17);
       }
 
       this._cells.push(column);
