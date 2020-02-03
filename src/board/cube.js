@@ -1,3 +1,5 @@
+import { CUBE } from "../constants";
+
 export class Cube extends Phaser.GameObjects.Container {
   constructor(scene) {
     super(scene);
@@ -23,7 +25,7 @@ export class Cube extends Phaser.GameObjects.Container {
   _buildBg() {
     const bg = this.scene.add.graphics();
     bg.fillStyle(0x33f422);
-    bg.fillRoundedRect(0, 0, 50, 50, 5);
+    bg.fillRoundedRect(0, 0, CUBE.width, CUBE.height, 5);
     this.add(bg);
     this._bg = bg;
   }

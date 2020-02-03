@@ -15,7 +15,7 @@ export class MainView extends Phaser.GameObjects.Container {
   _buildBoard() {
     const board = new Board(this.scene);
     this.add(board);
-    board.setPosition(250, 100);
+    board.setPosition(245, 100);
   }
 
   _buildUI() {
