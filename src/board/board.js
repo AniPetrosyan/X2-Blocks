@@ -60,8 +60,6 @@ export class Board extends Phaser.GameObjects.Container {
 
   _onMouseOut(col) {
     const column = this._columns[col];
-    console.log("alphaTest");
-
     column.removeBg();
   }
 }
