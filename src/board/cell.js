@@ -10,18 +10,18 @@ export class Cell extends Phaser.GameObjects.Container {
     this._build();
   }
 
-  _build() {
-    const bg = this.scene.add.graphics();
-    bg.fillStyle(0xff0000, 0.5);
-    bg.fillRect(0, 0, 50, 50);
-    this.add(bg);
-  }
-
   get row() {
     return this._row;
   }
 
   get col() {
     return this._col;
+  }
+
+  _build() {
+    const bg = this.scene.add.graphics();
+    bg.fillStyle(0xff0000, 0.5);
+    bg.fillRect(0, 0, 50, 50);
+    this.add(bg);
   }
 }

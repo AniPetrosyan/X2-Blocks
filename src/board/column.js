@@ -1,15 +1,27 @@
 export class Column extends Phaser.GameObjects.Container {
-  constructor(scene) {
+  constructor(scene, col) {
     super(scene);
+
+    this._col = col;
 
     this._build();
     this._addListeners();
   }
+  get col() {
+    return this._col;
+  }
+
+  setBg() {
+    this._bg.setAlpha(0.3);
+  }
+  removeBg() {
+    this._bg.setAlpha(0.1);
+  }
 
   _build() {
-    const bg = this.scene.add.graphics();
-    bg.fillStyle(0xf5e1e2, 0.5);
-    bg.fillRect(0, 0, 50, 390);
+    const bg = this.scene.add.image(0, 0, "column");
+    bg.setOrigin(0, 0);
+    bg.setAlpha(0.1);
     this.add((this._bg = bg));
   }
 
@@ -17,11 +29,15 @@ export class Column extends Phaser.GameObjects.Container {
 
   _addListeners() {
     this._bg.setInteractive();
-    this._bg.on("pointerup", this._onPointerUp, this);
+    this._bg.on(Phaser.Input.Events.POINTER_OVER, this._onPointerOver, this);
+    this._bg.on(Phaser.Input.Events.POINTER_OUT, this._onPointerOut, this);
   }
 
-  _onPointerUp() {
-    this.emit("onCellClick");
-    console.log("test click");
+  _onPointerOver() {
+    this.emit("mouseOver", this._col);
+  }
+
+  _onPointerOut() {
+    this.emit("mouseOut", this._col);
   }
 }

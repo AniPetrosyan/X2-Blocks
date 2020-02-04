@@ -43,17 +43,23 @@ export class Board extends Phaser.GameObjects.Container {
   }
 
   _buildInteractiveColumns() {
-    for (let i = 0; i < BOARD_DIMENSIONS.width; i++) {
-      const column = new Column(this.scene);
+    for (let col = 0; col < BOARD_DIMENSIONS.width; col++) {
+      const column = new Column(this.scene, col);
       this.add(column);
       this._columns.push(column);
-      column.setPosition(i * (CUBE.width + CUBE.gap) + 15, 0);
-      //event on
-      column.on("onCellClick", this._onCellClicked, this);
+      column.setPosition(col * (CUBE.width + CUBE.gap) + 15, 0);
+      column.on("mouseOver", this._onMouseOver, this);
+      column.on("mouseOut", this._onMouseOut, this);
     }
   }
 
-  _onCellClicked() {
-    console.log("test");
+  _onMouseOver(col) {
+    const column = this._columns[col];
+    column.setBg();
+  }
+
+  _onMouseOut(col) {
+    const column = this._columns[col];
+    column.removeBg();
   }
 }
