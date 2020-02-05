@@ -1,6 +1,8 @@
 import { BOARD_DIMENSIONS, CUBE } from "../constants";
+import { EVENTS } from "../events";
 import { Cell } from "./cell";
 import { Column } from "./column";
+import { Cube } from "./cube";
 
 export class Board extends Phaser.GameObjects.Container {
   constructor(scene) {
@@ -8,7 +10,9 @@ export class Board extends Phaser.GameObjects.Container {
 
     this._cells = [];
     this._columns = [];
+
     this._build();
+    this.scene.events.on(EVENTS.CUBE_READY, this._onCubeReady, this);
   }
 
   _build() {
@@ -50,7 +54,24 @@ export class Board extends Phaser.GameObjects.Container {
       column.setPosition(col * (CUBE.width + CUBE.gap) + 15, 0);
       column.on("mouseOver", this._onMouseOver, this);
       column.on("mouseOut", this._onMouseOut, this);
+      column.on("pointerUp", this._onPointerUp, this);
     }
+  }
+
+  _addCubeToBoard(col) {
+    for (let i = 0; i < this._cells[col].length; i++) {
+      const cell = this._cells[col][i];
+      if (cell.isEmpty) {
+        const cube = new Cube(this.scene, this._cubeType);
+        cell.addCube(cube);
+        this.scene.events.emit(EVENTS.CUBE_ADDED);
+        break;
+      }
+    }
+  }
+
+  _onPointerUp(col) {
+    this._addCubeToBoard(col);
   }
 
   _onMouseOver(col) {
@@ -61,5 +82,9 @@ export class Board extends Phaser.GameObjects.Container {
   _onMouseOut(col) {
     const column = this._columns[col];
     column.removeBg();
+  }
+
+  _onCubeReady(cubeType) {
+    this._cubeType = cubeType;
   }
 }

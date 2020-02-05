@@ -31,6 +31,11 @@ export class Column extends Phaser.GameObjects.Container {
     this._bg.setInteractive();
     this._bg.on(Phaser.Input.Events.POINTER_OVER, this._onPointerOver, this);
     this._bg.on(Phaser.Input.Events.POINTER_OUT, this._onPointerOut, this);
+    this._bg.on(Phaser.Input.Events.POINTER_UP, this._onPointerUp, this);
+  }
+
+  _onPointerUp() {
+    this.emit("pointerUp", this._col);
   }
 
   _onPointerOver() {
