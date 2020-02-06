@@ -133,6 +133,7 @@ export class Board extends Phaser.GameObjects.Container {
     const newType = type + this._combinations;
     const cube = new Cube(this.scene, newType);
     cell.addCube(cube);
+    this.scene.events.emit(EVENTS.ADD_SCORES, cube.value);
 
     this._combinations = 0;
 
