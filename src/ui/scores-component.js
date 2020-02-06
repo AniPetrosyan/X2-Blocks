@@ -1,7 +1,8 @@
 export class ScoresComponent extends Phaser.GameObjects.Container {
   constructor(scene) {
     super(scene);
-    // this._build();
+    this._scores = 0;
+    this._build();
   }
 
   get score() {
@@ -9,7 +10,8 @@ export class ScoresComponent extends Phaser.GameObjects.Container {
   }
 
   updateScore(score) {
-    this._score.text = score;
+    this._scores += score;
+    this._score.text = this._scores;
   }
 
   _build() {
@@ -18,18 +20,18 @@ export class ScoresComponent extends Phaser.GameObjects.Container {
   }
 
   _buildTitleText() {
-    const text = this.scene.add.text(0, 0, "SCORE:", {
+    const text = this.scene.add.text(20, 20, "SCORE:", {
       fontFamily: '"Arial Black"',
-      color: "black",
+      color: "white",
       fontSize: 20
     });
     this.add(text);
   }
 
   _buildScoreText() {
-    this._score = this.scene.add.text(90, 0, "0", {
+    this._score = this.scene.add.text(110, 20, "0", {
       fontFamily: '"Arial Black"',
-      color: "black",
+      color: "white",
       fontSize: 20
     });
     this.add(this._score);
