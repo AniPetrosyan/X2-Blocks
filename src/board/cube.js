@@ -1,42 +1,45 @@
-import { CUBE } from "../constants";
+import { COLOUR, CUBE } from "../constants";
 
 export class Cube extends Phaser.GameObjects.Container {
-  constructor(scene) {
+  constructor(scene, type) {
     super(scene);
-    this._value = NaN;
-
+    this._type = type;
+    this._value = 2;
+    this._colour = null;
     this._build();
   }
 
-  get value() {
-    return _value;
+  get type() {
+    return this._type;
   }
-
-  updateValue(value) {
-    this._value = value;
-    //update colour
+  get value() {
+    return this._value;
   }
 
   _build() {
+    this._setValue();
     this._buildBg();
     this._buildText();
   }
 
+  _setValue() {
+    this._value **= this._type;
+  }
+
   _buildBg() {
     const bg = this.scene.add.graphics();
-    bg.fillStyle(0x33f422);
+    bg.fillStyle(COLOUR[this._type]);
     bg.fillRoundedRect(0, 0, CUBE.width, CUBE.height, 5);
     this.add(bg);
-    this._bg = bg;
   }
 
   _buildText() {
     // const { width, height } = this._bg;
 
-    const text = this.scene.add.text(25, 25, "0", {
+    const text = this.scene.add.text(25, 25, this._value, {
       fontFamily: '"Arial Black"',
       color: "black",
-      fontSize: 15
+      fontSize: 13
     });
     text.setOrigin(0.5);
     this.add(text);

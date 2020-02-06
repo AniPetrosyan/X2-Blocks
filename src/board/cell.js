@@ -1,13 +1,29 @@
+import { CUBE } from "../constants";
+
 export class Cell extends Phaser.GameObjects.Container {
   constructor(scene, row, col) {
     super(scene);
 
-    this.width = 50;
-    this.height = 50;
+    this.width = CUBE.width;
+    this.height = CUBE.height;
     this._row = row;
     this._col = col;
+    this._cube = null;
+  }
+  addCube(cube) {
+    this.add(cube);
+    this._cube = cube;
+  }
+  removeCube() {
+    this.remove(this._cube);
+    this._cube = null;
+  }
+  get cube() {
+    return this._cube;
+  }
 
-    this._build();
+  get isEmpty() {
+    return !this._cube;
   }
 
   get row() {
@@ -16,12 +32,5 @@ export class Cell extends Phaser.GameObjects.Container {
 
   get col() {
     return this._col;
-  }
-
-  _build() {
-    const bg = this.scene.add.graphics();
-    bg.fillStyle(0xff0000, 0.5);
-    bg.fillRect(0, 0, 50, 50);
-    this.add(bg);
   }
 }
