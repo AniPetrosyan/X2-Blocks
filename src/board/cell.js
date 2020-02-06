@@ -18,6 +18,9 @@ export class Cell extends Phaser.GameObjects.Container {
     this.remove(this._cube);
     this._cube = null;
   }
+  get cube() {
+    return this._cube;
+  }
 
   get isEmpty() {
     return !this._cube;
