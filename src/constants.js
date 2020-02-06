@@ -17,16 +17,16 @@ export const CUBE = Object.freeze({
 });
 
 export const COLOUR = Object.freeze({
-  1: 0x33f422,
-  2: 0xe54e1d,
-  3: 0xe88c20,
-  4: 0x82e9d3,
-  5: 0xe9e937,
-  6: 0x999907,
-  7: 0x1f9e0a,
-  8: 0x74e9e8,
-  9: 0x2d8f8e,
-  10: 0x8d31c3,
-  11: 0x546ef6,
-  12: 0x546ef6
+  1: 0xb4aa1,
+  2: 0x1199b7,
+  3: 0xcada72,
+  4: 0xc31736,
+  5: 0xb03397,
+  6: 0xa09bc2,
+  7: 0xba5139,
+  8: 0x659962,
+  9: 0xb7beae,
+  10: 0xf4d451,
+  11: 0x634870,
+  12: 0x16a7a1
 });
