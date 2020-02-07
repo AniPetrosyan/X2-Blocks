@@ -136,38 +136,48 @@ export class Board extends Phaser.GameObjects.Container {
     this.scene.events.emit(EVENTS.ADD_SCORES, cube.value);
 
     this._combinations = 0;
-
-    const isMoved = this._bubbleBoard();
-    if (!isMoved) {
-      this._checkForAllCombinations(cell, cell.cube, cell.col, cell.row);
-    }
+    this._bubbleBoard(cell);
   }
 
-  _bubbleBoard() {
-    let isMoved = false;
+  _bubbleBoard(cell) {
+    const checkingCubes = [];
+    let newCell = cell;
+    if (cell.row > 0 && this._cells[cell.col][cell.row - 1].isEmpty) {
+      const cube = cell.cube;
+      newCell = this._cells[cell.col][cell.row - 1];
+      newCell.addCube(cube);
+      cell.removeCube();
+    }
+    checkingCubes.push(newCell);
     for (let col = 0; col < BOARD_DIMENSIONS.width; col++) {
       for (let row = 0; row < BOARD_DIMENSIONS.height; row++) {
         if (this._cells[col][row].isEmpty) {
+          let movedUpCubes = 0;
           for (let i = row + 1; i < BOARD_DIMENSIONS.height; i++) {
             if (!this._cells[col][i].isEmpty) {
               const cube = this._cells[col][i].cube;
-              const cell = this._cells[col][row];
-              isMoved = true;
+              const cell = this._cells[col][row + movedUpCubes];
 
               cell.addCube(cube);
               this._cells[col][i].removeCube();
-              this._checkForAllCombinations(
-                cell,
-                cell.cube,
-                cell.col,
-                cell.row
-              );
+              checkingCubes.push(cell);
+              movedUpCubes++;
             }
           }
         }
       }
     }
-    return isMoved;
+    this._secondCheckForCombo(checkingCubes);
+  }
+
+  //Second check
+
+  _secondCheckForCombo(checkingCubes) {
+    checkingCubes.forEach(cell => {
+      if (cell.isEmpty === false) {
+        this._checkForAllCombinations(cell, cell.cube, cell.col, cell.row);
+      }
+    });
   }
 
   // Events

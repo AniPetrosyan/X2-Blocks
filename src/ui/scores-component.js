@@ -5,10 +5,6 @@ export class ScoresComponent extends Phaser.GameObjects.Container {
     this._build();
   }
 
-  get score() {
-    return +this._score.text;
-  }
-
   updateScore(score) {
     this._scores += score;
     this._score.text = this._scores;
