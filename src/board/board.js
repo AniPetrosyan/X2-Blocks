@@ -11,7 +11,7 @@ export class Board extends Phaser.GameObjects.Container {
     this._cells = [];
     this._columns = [];
     this._combinations = 0;
-    this._cellsForRemovableCubes = [];
+    this._matchingCells = [];
     this._cellsForChecking = [];
 
     this._build();
@@ -64,60 +64,59 @@ export class Board extends Phaser.GameObjects.Container {
   }
 
   _addCubeToBoard(col) {
-    const cube = new Cube(this.scene, this._cubeType);
-    let cell = null;
-
     for (let i = 0; i < this._cells[col].length; i++) {
-      cell = this._cells[col][i];
+      const cell = this._cells[col][i];
       if (cell.isEmpty) {
+        const cube = new Cube(this.scene, this._cubeType);
         cell.addCube(cube);
         this.scene.events.emit(EVENTS.CUBE_ADDED);
+        const { col: x, row: y } = cell;
+        const { value } = cube;
+        this._checkForAllCombinations(cell, value, x, y);
 
         break;
       }
     }
-    const { col: x, row: y } = cell;
-    this._checkForAllCombinations(cell, cube, x, y);
   }
 
   // Making Combinations
 
-  _checkForAllCombinations(cell, cube, x, y) {
-    this._checkForUpCombination(cube, x, y);
-    this._checkForLeftCombination(cube, x, y);
-    this._checkForRightCombination(cube, x, y);
+  _checkForAllCombinations(cell, value, x, y) {
+    this._checkForUpCombination(value, x, y);
+    this._checkForLeftCombination(value, x, y);
+    this._checkForRightCombination(value, x, y);
     if (this._combinations > 0) {
-      this._cellsForRemovableCubes.push(cell);
+      this._matchingCells.push(cell);
       this._collectCombinations(cell);
     }
   }
 
-  _checkForUpCombination(cube, x, y) {
+  _checkForUpCombination(value, x, y) {
     if (y > 0) {
       const checkingCell = this._cells[x][y - 1];
-      if (checkingCell.cube.value === cube.value) {
+      if (!checkingCell.isEmpty && checkingCell.cube.value === value) {
         this._combinations++;
-        this._cellsForRemovableCubes.push(checkingCell);
+        this._matchingCells.push(checkingCell);
       }
     }
   }
 
-  _checkForLeftCombination(cube, x, y) {
+  _checkForLeftCombination(value, x, y) {
     if (x > 0) {
       const checkingCell = this._cells[x - 1][y];
-      if (!checkingCell.isEmpty && checkingCell.cube.value === cube.value) {
+      if (!checkingCell.isEmpty && checkingCell.cube.value === value) {
         this._combinations++;
-        this._cellsForRemovableCubes.push(checkingCell);
+        this._matchingCells.push(checkingCell);
       }
     }
   }
 
-  _checkForRightCombination(cube, x, y) {
+  _checkForRightCombination(value, x, y) {
     if (x < BOARD_DIMENSIONS.width - 1) {
       const checkingCell = this._cells[x + 1][y];
-      if (!checkingCell.isEmpty && checkingCell.cube.value === cube.value) {
+      if (!checkingCell.isEmpty && checkingCell.cube.value === value) {
         this._combinations++;
-        this._cellsForRemovableCubes.push(checkingCell);
+        this._matchingCells.push(checkingCell);
       }
     }
   }
@@ -126,14 +125,14 @@ export class Board extends Phaser.GameObjects.Container {
 
   _collectCombinations(cell) {
     const { type } = cell.cube;
-    this._cellsForRemovableCubes.forEach(cell => {
+    this._matchingCells.forEach(cell => {
       cell.removeCube();
     });
-    this._cellsForRemovableCubes.length = 0;
+    this._matchingCells.length = 0;
     const newType = type + this._combinations;
     const cube = new Cube(this.scene, newType);
     cell.addCube(cube);
-    this.scene.events.emit(EVENTS.ADD_SCORES, cube.value);
+    this.scene.events.emit(EVENTS.CUBES_COLLECTED, cube.value);
 
     this._combinations = 0;
     this._bubbleBoard(cell);
@@ -174,8 +173,9 @@ export class Board extends Phaser.GameObjects.Container {
 
   _secondCheckForCombo(checkingCubes) {
     checkingCubes.forEach(cell => {
-      if (cell.isEmpty === false) {
-        this._checkForAllCombinations(cell, cell.cube, cell.col, cell.row);
+      if (!cell.isEmpty) {
+        const { cube, col, row } = cell;
+        this._checkForAllCombinations(cell, cube.value, col, row);
       }
     });
   }
