@@ -7,7 +7,7 @@ export class UI extends Phaser.GameObjects.Container {
     super(scene);
     this._build();
     this.scene.events.on(EVENTS.CUBE_ADDED, this._onCubeAdded, this);
-    this.scene.events.on(EVENTS.ADD_SCORES, this._onScoresAdded, this);
+    this.scene.events.on(EVENTS.CUBES_COLLECTED, this._onCubesCollected, this);
   }
 
   _build() {
@@ -15,7 +15,7 @@ export class UI extends Phaser.GameObjects.Container {
     this._buildNextCube();
   }
 
-  _onScoresAdded(score) {
+  _onCubesCollected(score) {
     this._scores.updateScore(score);
   }
 
