@@ -14,8 +14,13 @@ export class Board extends Phaser.GameObjects.Container {
     this._matchingCells = [];
     this._cellsForChecking = [];
 
+    this._cellsForBubbledCubes = [];
+    this._bubbledCubes = [];
+
     this._build();
     this.scene.events.on(EVENTS.CUBE_READY, this._onCubeReady, this);
+
+    this.scene.events.on(EVENTS.BUBBLE_ANIM_END, this._onBubbleAnimEnd, this);
   }
 
   _build() {
@@ -124,30 +129,61 @@ export class Board extends Phaser.GameObjects.Container {
   //Removing cubes
 
   _collectCombinations(cell) {
+    this._bubbleCheckingCell = cell;
+    const endPoint = cell.getPosition();
+    const startPoints = [];
+
     const { type } = cell.cube;
     this._matchingCells.forEach(cell => {
+      const position = cell.getPosition();
+      startPoints.push(position);
       cell.removeCube();
     });
     this._matchingCells.length = 0;
+    this.scene.events.emit(EVENTS.CUBES_REMOVED, endPoint, startPoints, type);
+
     const newType = type + this._combinations;
     const cube = new Cube(this.scene, newType);
     cell.addCube(cube);
     this.scene.events.emit(EVENTS.CUBES_COLLECTED, cube.value);
-
     this._combinations = 0;
-    this._bubbleBoard(cell);
+
+    this.scene.events.on(EVENTS.COLLECT_ANIM_END, this._onCollectAnimEnd, this);
   }
 
-  _bubbleBoard(cell) {
-    const checkingCubes = [];
+  _onCollectAnimEnd() {
+    this._bubbleBoard();
+  }
+
+  _bubbleBoard() {
+    const cell = this._bubbleCheckingCell;
+
+    //this._cellsForBubbledCubes.length = 0;
+    //this._bubbledCubes.length = 0;
+    const endPoints = [];
+    const startPoints = [];
+    const types = [];
+    this._checkingCubes = [];
     let newCell = cell;
     if (cell.row > 0 && this._cells[cell.col][cell.row - 1].isEmpty) {
+      const endPoint = this._cells[cell.col][cell.row - 1].getPosition();
+      const startPoint = newCell.getPosition();
+
       const cube = cell.cube;
+      const { type } = cube;
+
+      endPoints.push(endPoint);
+      startPoints.push(startPoint);
+      types.push(type);
       newCell = this._cells[cell.col][cell.row - 1];
-      newCell.addCube(cube);
       cell.removeCube();
+      // newCell.addCube(cube);
+
+      this._cellsForBubbledCubes.push(newCell);
+      this._bubbledCubes.push(cube);
     }
-    checkingCubes.push(newCell);
+
+    this._checkingCubes.push(newCell);
     for (let col = 0; col < BOARD_DIMENSIONS.width; col++) {
       for (let row = 0; row < BOARD_DIMENSIONS.height; row++) {
         if (this._cells[col][row].isEmpty) {
@@ -157,27 +193,51 @@ export class Board extends Phaser.GameObjects.Container {
               const cube = this._cells[col][i].cube;
               const cell = this._cells[col][row + movedUpCubes];
 
-              cell.addCube(cube);
+              const startPoint = this._cells[col][i].getPosition();
+              const { type } = cube;
+              const endPoint = cell.getPosition();
+              endPoints.push(endPoint);
+              types.push(type);
+              startPoints.push(startPoint);
               this._cells[col][i].removeCube();
-              checkingCubes.push(cell);
+              // cell.addCube(cube);
+
+              this._checkingCubes.push(cell);
               movedUpCubes++;
+
+              this._cellsForBubbledCubes.push(cell);
+              this._bubbledCubes.push(cube);
             }
           }
         }
       }
     }
-    this._secondCheckForCombo(checkingCubes);
+
+    this.scene.events.emit(EVENTS.BUBBLE_READY, endPoints, startPoints, types);
+  }
+
+  _onBubbleAnimEnd() {
+    console.log(this._cellsForBubbledCubes);
+    for (let i = 0; i < this._cellsForBubbledCubes.length; i++) {
+      this._cellsForBubbledCubes[i].addCube(this._bubbledCubes[i]);
+      this._secondCheckForCombo();
+    }
   }
 
   //Second check
 
-  _secondCheckForCombo(checkingCubes) {
-    checkingCubes.forEach(cell => {
+  _secondCheckForCombo() {
+    console.log("anim");
+
+    console.log(this._checkingCubes);
+
+    this._checkingCubes.forEach(cell => {
       if (!cell.isEmpty) {
         const { cube, col, row } = cell;
         this._checkForAllCombinations(cell, cube.value, col, row);
       }
     });
+    this._checkingCubes.length = 0;
   }
 
   // Events

@@ -10,6 +10,15 @@ export class Cell extends Phaser.GameObjects.Container {
     this._col = col;
     this._cube = null;
   }
+
+  getPosition() {
+    const position = {
+      x: this._col * (CUBE.width + CUBE.gap) + 15,
+      y: this._row * (CUBE.height + CUBE.gap) + 12
+    };
+    return position;
+  }
+
   addCube(cube) {
     this.add(cube);
     this._cube = cube;
