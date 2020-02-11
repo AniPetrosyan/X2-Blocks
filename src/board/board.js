@@ -238,23 +238,22 @@ export class Board extends Phaser.GameObjects.Container {
     for (let i = 0; i < this._cellsForBubbledCubes.length; i++) {
       // this._cellsForBubbledCubes[i].addCube(this._bubbledCubes[i]);
       this._cellsForBubbledCubes[i].cube.visible = true;
-      this._secondCheckForCombo();
     }
+    this._secondCheckForCombo();
   }
 
   //Second check
 
   _secondCheckForCombo() {
-    console.log("_secondCheckForCombo");
-    console.log(this._checkingCubes);
+    const checkingCubes = this._checkingCubes.map(cube => cube);
+    this._checkingCubes.length = 0;
 
-    this._checkingCubes.forEach(cell => {
+    checkingCubes.forEach(cell => {
       if (!cell.isEmpty) {
         const { cube, col, row } = cell;
         this._checkForAllCombinations(cell, cube.value, col, row);
       }
     });
-    this._checkingCubes.length = 0;
   }
 
   // Events

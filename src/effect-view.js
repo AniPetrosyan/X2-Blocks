@@ -52,10 +52,13 @@ export class EffectView extends Phaser.GameObjects.Container {
           this.remove(cube);
         }
       });
-
+    }
+    if (lastTween) {
       lastTween.on("complete", () => {
         this.scene.events.emit(EVENTS.EFFECT_VIEW_BUBBLE_ANIMATION_FINISHED);
       });
+    } else {
+      this.scene.events.emit(EVENTS.EFFECT_VIEW_BUBBLE_ANIMATION_FINISHED);
     }
   }
 }
