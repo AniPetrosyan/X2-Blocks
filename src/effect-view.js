@@ -5,8 +5,8 @@ export class EffectView extends Phaser.GameObjects.Container {
   constructor(scene) {
     super(scene);
 
-    this.scene.events.on(EVENTS.CUBES_REMOVED, this._cubesCollectAnim, this);
-    this.scene.events.on(EVENTS.BUBBLE_READY, this._bubbleAnim, this);
+    this.scene.events.on(EVENTS.CUBES_COLLECTED, this._cubesCollectAnim, this);
+    this.scene.events.on(EVENTS.BOARD_BUBBLE_COMPLETE, this._bubbleAnim, this);
   }
 
   _cubesCollectAnim(endPoint, startPoints, type) {
@@ -24,33 +24,38 @@ export class EffectView extends Phaser.GameObjects.Container {
       x: endPoint.x,
       y: endPoint.y,
       ease: "Power1",
-      duration: 250
+      duration: 250,
+      onComplete: () => {
+        this.remove(cubes);
+        this.scene.events.emit(
+          EVENTS.EFFECT_VIEW_CUBES_COLLECT_ANIMATION_FINISHED
+        );
+      }
     });
-    setTimeout(() => {
-      this.remove(cubes);
-      this.scene.events.emit(EVENTS.COLLECT_ANIM_END);
-    }, 250);
   }
 
   _bubbleAnim(endPoints, startPoints, types) {
+    let lastTween;
+
     for (let i = 0; i < startPoints.length; i++) {
       const cube = new Cube(this.scene, types[i]);
       this.add(cube);
       cube.setPosition(startPoints[i].x, startPoints[i].y);
 
-      this.scene.tweens.add({
+      lastTween = this.scene.tweens.add({
         targets: cube,
         x: endPoints[i].x,
         y: endPoints[i].y,
         ease: "Power1",
-        duration: 250
+        duration: 250,
+        onComplete: () => {
+          this.remove(cube);
+        }
       });
-      setTimeout(() => {
-        this.remove(cube);
-      }, 250);
+
+      lastTween.on("complete", () => {
+        this.scene.events.emit(EVENTS.EFFECT_VIEW_BUBBLE_ANIMATION_FINISHED);
+      });
     }
-    setTimeout(() => {
-      this.scene.events.emit(EVENTS.BUBBLE_ANIM_END);
-    }, 250);
   }
 }

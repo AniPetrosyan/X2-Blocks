@@ -19,8 +19,16 @@ export class Board extends Phaser.GameObjects.Container {
 
     this._build();
     this.scene.events.on(EVENTS.CUBE_READY, this._onCubeReady, this);
-
-    this.scene.events.on(EVENTS.BUBBLE_ANIM_END, this._onBubbleAnimEnd, this);
+    this.scene.events.on(
+      EVENTS.EFFECT_VIEW_CUBES_COLLECT_ANIMATION_FINISHED,
+      this._onCollectAnimEnd,
+      this
+    );
+    this.scene.events.on(
+      EVENTS.EFFECT_VIEW_BUBBLE_ANIMATION_FINISHED,
+      this._onBubbleAnimEnd,
+      this
+    );
   }
 
   _build() {
@@ -140,15 +148,18 @@ export class Board extends Phaser.GameObjects.Container {
       cell.removeCube();
     });
     this._matchingCells.length = 0;
-    this.scene.events.emit(EVENTS.CUBES_REMOVED, endPoint, startPoints, type);
 
     const newType = type + this._combinations;
     const cube = new Cube(this.scene, newType);
     cell.addCube(cube);
-    this.scene.events.emit(EVENTS.CUBES_COLLECTED, cube.value);
+    this.scene.events.emit(
+      EVENTS.CUBES_COLLECTED,
+      endPoint,
+      startPoints,
+      type,
+      cube.value
+    );
     this._combinations = 0;
-
-    this.scene.events.on(EVENTS.COLLECT_ANIM_END, this._onCollectAnimEnd, this);
   }
 
   _onCollectAnimEnd() {
@@ -158,7 +169,7 @@ export class Board extends Phaser.GameObjects.Container {
   _bubbleBoard() {
     const cell = this._bubbleCheckingCell;
 
-    //this._cellsForBubbledCubes.length = 0;
+    this._cellsForBubbledCubes.length = 0;
     //this._bubbledCubes.length = 0;
     const endPoints = [];
     const startPoints = [];
@@ -177,10 +188,11 @@ export class Board extends Phaser.GameObjects.Container {
       types.push(type);
       newCell = this._cells[cell.col][cell.row - 1];
       cell.removeCube();
-      // newCell.addCube(cube);
+      newCell.addCube(cube);
+      cube.visible = false;
 
       this._cellsForBubbledCubes.push(newCell);
-      this._bubbledCubes.push(cube);
+      // this._bubbledCubes.push(cube);
     }
 
     this._checkingCubes.push(newCell);
@@ -200,26 +212,32 @@ export class Board extends Phaser.GameObjects.Container {
               types.push(type);
               startPoints.push(startPoint);
               this._cells[col][i].removeCube();
-              // cell.addCube(cube);
+              cell.addCube(cube);
+              cube.visible = false;
 
               this._checkingCubes.push(cell);
               movedUpCubes++;
 
               this._cellsForBubbledCubes.push(cell);
-              this._bubbledCubes.push(cube);
+              // this._bubbledCubes.push(cube);
             }
           }
         }
       }
     }
 
-    this.scene.events.emit(EVENTS.BUBBLE_READY, endPoints, startPoints, types);
+    this.scene.events.emit(
+      EVENTS.BOARD_BUBBLE_COMPLETE,
+      endPoints,
+      startPoints,
+      types
+    );
   }
 
   _onBubbleAnimEnd() {
-    console.log(this._cellsForBubbledCubes);
     for (let i = 0; i < this._cellsForBubbledCubes.length; i++) {
-      this._cellsForBubbledCubes[i].addCube(this._bubbledCubes[i]);
+      // this._cellsForBubbledCubes[i].addCube(this._bubbledCubes[i]);
+      this._cellsForBubbledCubes[i].cube.visible = true;
       this._secondCheckForCombo();
     }
   }
@@ -227,8 +245,7 @@ export class Board extends Phaser.GameObjects.Container {
   //Second check
 
   _secondCheckForCombo() {
-    console.log("anim");
-
+    console.log("_secondCheckForCombo");
     console.log(this._checkingCubes);
 
     this._checkingCubes.forEach(cell => {

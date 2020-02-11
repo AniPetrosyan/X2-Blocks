@@ -1,5 +1,3 @@
-import { EVENTS } from "../events";
-
 export class Column extends Phaser.GameObjects.Container {
   constructor(scene, col) {
     super(scene);
@@ -8,12 +6,6 @@ export class Column extends Phaser.GameObjects.Container {
 
     this._build();
     this._addListeners();
-    this.scene.events.on(EVENTS.CUBES_REMOVED, this._disableInteractive, this);
-    this.scene.events.on(
-      EVENTS.COLLECT_ANIM_END,
-      this._enableInteractive,
-      this
-    );
   }
   get col() {
     return this._col;
@@ -36,6 +28,7 @@ export class Column extends Phaser.GameObjects.Container {
   _disableInteractive() {
     this._bg.disableInteractive();
   }
+
   _enableInteractive() {
     this._bg.setInteractive();
   }

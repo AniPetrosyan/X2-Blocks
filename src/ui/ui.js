@@ -15,7 +15,7 @@ export class UI extends Phaser.GameObjects.Container {
     this._buildNextCube();
   }
 
-  _onCubesCollected(score) {
+  _onCubesCollected(endP, startP, type, score) {
     this._scores.updateScore(score);
   }
 
