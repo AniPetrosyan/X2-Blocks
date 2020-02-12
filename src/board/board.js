@@ -13,9 +13,9 @@ export class Board extends Phaser.GameObjects.Container {
     this._combinations = 0;
     this._matchingCells = [];
     this._cellsForChecking = [];
+    this._cellForAddedCube = null;
 
     this._cellsForBubbledCubes = [];
-    this._bubbledCubes = [];
 
     this._build();
     this.scene.events.on(EVENTS.CUBE_READY, this._onCubeReady, this);
@@ -27,6 +27,11 @@ export class Board extends Phaser.GameObjects.Container {
     this.scene.events.on(
       EVENTS.EFFECT_VIEW_BUBBLE_ANIMATION_FINISHED,
       this._onBubbleAnimEnd,
+      this
+    );
+    this.scene.events.on(
+      EVENTS.EFFECT_VIEW_CUBE_ADDING_ANIMATION_FINISHED,
+      this._onCubeAdded,
       this
     );
   }
@@ -81,26 +86,54 @@ export class Board extends Phaser.GameObjects.Container {
       const cell = this._cells[col][i];
       if (cell.isEmpty) {
         const cube = new Cube(this.scene, this._cubeType);
-        cell.addCube(cube);
-        this.scene.events.emit(EVENTS.CUBE_ADDED);
-        const { col: x, row: y } = cell;
-        const { value } = cube;
-        this._checkForAllCombinations(cell, value, x, y);
+        this._cellForAddedCube = cell;
+        this._cellForAddedCube.addCube(cube);
+        cube.visible = false;
+
+        const type = this._cubeType;
+        const startPoint = this._cells[col][
+          BOARD_DIMENSIONS.height - 1
+        ].getPosition();
+        const endPoint = cell.getPosition();
+
+        this.scene.events.emit(EVENTS.BOARD_CHECKING_PROCESS);
+
+        this.scene.events.emit(
+          EVENTS.CUBE_ADDED_TO_BOARD,
+          endPoint,
+          startPoint,
+          type
+        );
 
         break;
       }
     }
   }
 
+  _onCubeAdded() {
+    this._cellForAddedCube.cube.visible = true;
+    this._checkForAllCombinations(
+      this._cellForAddedCube,
+      this._cellForAddedCube.cube.value,
+      this._cellForAddedCube.col,
+      this._cellForAddedCube.row
+    );
+    this._cellForAddedCube = null;
+  }
+
   // Making Combinations
 
   _checkForAllCombinations(cell, value, x, y) {
+    this.scene.events.emit(EVENTS.BOARD_CHECKING_PROCESS);
+
     this._checkForUpCombination(value, x, y);
     this._checkForLeftCombination(value, x, y);
     this._checkForRightCombination(value, x, y);
     if (this._combinations > 0) {
       this._matchingCells.push(cell);
       this._collectCombinations(cell);
+    } else {
+      this.scene.events.emit(EVENTS.BOARD_READY_FOR_INTERACTIVE);
     }
   }
 
@@ -137,6 +170,8 @@ export class Board extends Phaser.GameObjects.Container {
   //Removing cubes
 
   _collectCombinations(cell) {
+    this.scene.events.emit(EVENTS.BOARD_CHECKING_PROCESS);
+
     this._bubbleCheckingCell = cell;
     const endPoint = cell.getPosition();
     const startPoints = [];
@@ -167,10 +202,11 @@ export class Board extends Phaser.GameObjects.Container {
   }
 
   _bubbleBoard() {
+    this.scene.events.emit(EVENTS.BOARD_CHECKING_PROCESS);
+
     const cell = this._bubbleCheckingCell;
 
     this._cellsForBubbledCubes.length = 0;
-    //this._bubbledCubes.length = 0;
     const endPoints = [];
     const startPoints = [];
     const types = [];
@@ -192,7 +228,6 @@ export class Board extends Phaser.GameObjects.Container {
       cube.visible = false;
 
       this._cellsForBubbledCubes.push(newCell);
-      // this._bubbledCubes.push(cube);
     }
 
     this._checkingCubes.push(newCell);
@@ -219,7 +254,6 @@ export class Board extends Phaser.GameObjects.Container {
               movedUpCubes++;
 
               this._cellsForBubbledCubes.push(cell);
-              // this._bubbledCubes.push(cube);
             }
           }
         }
@@ -236,7 +270,6 @@ export class Board extends Phaser.GameObjects.Container {
 
   _onBubbleAnimEnd() {
     for (let i = 0; i < this._cellsForBubbledCubes.length; i++) {
-      // this._cellsForBubbledCubes[i].addCube(this._bubbledCubes[i]);
       this._cellsForBubbledCubes[i].cube.visible = true;
     }
     this._secondCheckForCombo();
@@ -245,6 +278,8 @@ export class Board extends Phaser.GameObjects.Container {
   //Second check
 
   _secondCheckForCombo() {
+    this.scene.events.emit(EVENTS.BOARD_CHECKING_PROCESS);
+
     const checkingCubes = this._checkingCubes.map(cube => cube);
     this._checkingCubes.length = 0;
 

@@ -6,7 +6,7 @@ export class UI extends Phaser.GameObjects.Container {
   constructor(scene) {
     super(scene);
     this._build();
-    this.scene.events.on(EVENTS.CUBE_ADDED, this._onCubeAdded, this);
+    this.scene.events.on(EVENTS.CUBE_ADDED_TO_BOARD, this._onCubeAdded, this);
     this.scene.events.on(EVENTS.CUBES_COLLECTED, this._onCubesCollected, this);
   }
 
