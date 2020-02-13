@@ -10,5 +10,7 @@ export const EVENTS = Object.freeze({
   EFFECT_VIEW_CUBE_ADDING_ANIMATION_FINISHED:
     "effectViewCubeAddingAnimationFinished",
   BOARD_READY_FOR_INTERACTIVE: "boardReadyForInteractive",
-  BOARD_CHECKING_PROCESS: "boardCheckingProcess"
+  BOARD_CHECKING_PROCESS: "boardCheckingProcess",
+  GAME_OVER: "gameOver",
+  RESET_GAME_SCENE: "resetGameScene"
 });

@@ -1,3 +1,4 @@
+import { TEXTURE } from "../constants";
 import { EVENTS } from "../events";
 
 export class Column extends Phaser.GameObjects.Container {
@@ -34,7 +35,7 @@ export class Column extends Phaser.GameObjects.Container {
   }
 
   _build() {
-    const bg = this.scene.add.image(0, 0, "column");
+    const bg = this.scene.add.image(0, 0, TEXTURE, "column");
     bg.setOrigin(0, 0);
     bg.setAlpha(0.1);
     this.add((this._bg = bg));

@@ -133,7 +133,24 @@ export class Board extends Phaser.GameObjects.Container {
       this._matchingCells.push(cell);
       this._collectCombinations(cell);
     } else {
+      this._checkForGameOver();
       this.scene.events.emit(EVENTS.BOARD_READY_FOR_INTERACTIVE);
+    }
+  }
+
+  _checkForGameOver() {
+    const columnLastCellNumber = BOARD_DIMENSIONS.height - 1;
+    let emptyCells = 0;
+
+    for (let i = 0; i < BOARD_DIMENSIONS.width; i++) {
+      const cell = this._cells[i][columnLastCellNumber];
+      if (cell.isEmpty) {
+        emptyCells++;
+        break;
+      }
+    }
+    if (emptyCells === 0) {
+      this.scene.events.emit(EVENTS.GAME_OVER);
     }
   }
 
