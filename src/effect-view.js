@@ -23,7 +23,7 @@ export class EffectView extends Phaser.GameObjects.Container {
       targets: cube,
       x: endPoint.x,
       y: endPoint.y,
-      ease: "Power1",
+      ease: Phaser.Math.Easing.Cubic.Out,
       duration: 250,
       onComplete: () => {
         this.remove(cube);
