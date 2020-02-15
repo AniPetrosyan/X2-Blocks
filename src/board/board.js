@@ -36,6 +36,26 @@ export class Board extends Phaser.GameObjects.Container {
     );
   }
 
+  destroy() {
+    this.scene.events.off(EVENTS.CUBE_READY, this._onCubeReady, this);
+    this.scene.events.off(
+      EVENTS.EFFECT_VIEW_CUBES_COLLECT_ANIMATION_FINISHED,
+      this._onCollectAnimEnd,
+      this
+    );
+    this.scene.events.off(
+      EVENTS.EFFECT_VIEW_BUBBLE_ANIMATION_FINISHED,
+      this._onBubbleAnimEnd,
+      this
+    );
+    this.scene.events.off(
+      EVENTS.EFFECT_VIEW_CUBE_ADDING_ANIMATION_FINISHED,
+      this._onCubeAdded,
+      this
+    );
+    super.destroy();
+  }
+
   _build() {
     this._buildBg();
     this._buildBoard();
@@ -96,7 +116,7 @@ export class Board extends Phaser.GameObjects.Container {
         ].getPosition();
         const endPoint = cell.getPosition();
 
-        this.scene.events.emit(EVENTS.BOARD_CHECKING_PROCESS);
+        this._disableInteractive();
 
         this.scene.events.emit(
           EVENTS.CUBE_ADDED_TO_BOARD,
@@ -108,6 +128,18 @@ export class Board extends Phaser.GameObjects.Container {
         break;
       }
     }
+  }
+
+  _disableInteractive() {
+    this._columns.forEach(column => {
+      column._disableInteractive();
+    });
+  }
+
+  _enableInteractive() {
+    this._columns.forEach(column => {
+      column._enableInteractive();
+    });
   }
 
   _onCubeAdded() {
@@ -124,7 +156,7 @@ export class Board extends Phaser.GameObjects.Container {
   // Making Combinations
 
   _checkForAllCombinations(cell, value, x, y) {
-    this.scene.events.emit(EVENTS.BOARD_CHECKING_PROCESS);
+    this._disableInteractive();
 
     this._checkForUpCombination(value, x, y);
     this._checkForLeftCombination(value, x, y);
@@ -134,7 +166,7 @@ export class Board extends Phaser.GameObjects.Container {
       this._collectCombinations(cell);
     } else {
       this._checkForGameOver();
-      this.scene.events.emit(EVENTS.BOARD_READY_FOR_INTERACTIVE);
+      this._enableInteractive();
     }
   }
 
@@ -187,7 +219,7 @@ export class Board extends Phaser.GameObjects.Container {
   //Removing cubes
 
   _collectCombinations(cell) {
-    this.scene.events.emit(EVENTS.BOARD_CHECKING_PROCESS);
+    this._disableInteractive();
 
     this._bubbleCheckingCell = cell;
     const endPoint = cell.getPosition();
@@ -219,7 +251,7 @@ export class Board extends Phaser.GameObjects.Container {
   }
 
   _bubbleBoard() {
-    this.scene.events.emit(EVENTS.BOARD_CHECKING_PROCESS);
+    this._disableInteractive();
 
     const cell = this._bubbleCheckingCell;
 
@@ -295,7 +327,7 @@ export class Board extends Phaser.GameObjects.Container {
   //Second check
 
   _secondCheckForCombo() {
-    this.scene.events.emit(EVENTS.BOARD_CHECKING_PROCESS);
+    this._disableInteractive();
 
     const checkingCubes = this._checkingCubes.map(cube => cube);
     this._checkingCubes.length = 0;

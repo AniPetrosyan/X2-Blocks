@@ -12,6 +12,13 @@ export class UI extends Phaser.GameObjects.Container {
     this.scene.events.on(EVENTS.GAME_OVER, this._buildGameOver, this);
   }
 
+  destroy() {
+    this.scene.events.off(EVENTS.CUBE_ADDED_TO_BOARD, this._onCubeAdded, this);
+    this.scene.events.off(EVENTS.CUBES_COLLECTED, this._onCubesCollected, this);
+    this.scene.events.off(EVENTS.GAME_OVER, this._buildGameOver, this);
+    super.destroy();
+  }
+
   _build() {
     this._buildScoresComponent();
     this._buildNextCube();

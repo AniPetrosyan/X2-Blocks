@@ -1,5 +1,4 @@
 import { TEXTURE } from "../constants";
-import { EVENTS } from "../events";
 
 export class Column extends Phaser.GameObjects.Container {
   constructor(scene, col) {
@@ -9,18 +8,6 @@ export class Column extends Phaser.GameObjects.Container {
 
     this._build();
     this._addListeners();
-
-    this.scene.events.on(
-      EVENTS.BOARD_CHECKING_PROCESS,
-      this._disableInteractive,
-      this
-    );
-
-    this.scene.events.on(
-      EVENTS.BOARD_READY_FOR_INTERACTIVE,
-      this._enableInteractive,
-      this
-    );
   }
 
   get col() {

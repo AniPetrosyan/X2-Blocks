@@ -14,6 +14,16 @@ export class EffectView extends Phaser.GameObjects.Container {
     this.scene.events.on(EVENTS.BOARD_BUBBLE_COMPLETE, this._bubbleAnim, this);
   }
 
+  destroy() {
+    this.scene.events.off(
+      EVENTS.CUBE_ADDED_TO_BOARD,
+      this._cubeAddingAnim,
+      this
+    );
+    this.scene.events.off(EVENTS.CUBES_COLLECTED, this._cubesCollectAnim, this);
+    this.scene.events.off(EVENTS.BOARD_BUBBLE_COMPLETE, this._bubbleAnim, this);
+  }
+
   _cubeAddingAnim(endPoint, startPoint, type) {
     const cube = new Cube(this.scene, type);
     this.add(cube);

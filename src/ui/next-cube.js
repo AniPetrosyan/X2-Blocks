@@ -6,6 +6,7 @@ export class NextCube extends Phaser.GameObjects.Container {
     super(scene);
     this._build();
   }
+
   updateCube() {
     this.remove(this._cube);
     this._generateRandomCube();
