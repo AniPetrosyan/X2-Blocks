@@ -1,3 +1,5 @@
+import { TEXTURE } from "../constants";
+
 export class Column extends Phaser.GameObjects.Container {
   constructor(scene, col) {
     super(scene);
@@ -7,6 +9,7 @@ export class Column extends Phaser.GameObjects.Container {
     this._build();
     this._addListeners();
   }
+
   get col() {
     return this._col;
   }
@@ -19,10 +22,18 @@ export class Column extends Phaser.GameObjects.Container {
   }
 
   _build() {
-    const bg = this.scene.add.image(0, 0, "column");
+    const bg = this.scene.add.image(0, 0, TEXTURE, "column");
     bg.setOrigin(0, 0);
     bg.setAlpha(0.1);
     this.add((this._bg = bg));
+  }
+
+  _disableInteractive() {
+    this._bg.disableInteractive();
+  }
+
+  _enableInteractive() {
+    this._bg.setInteractive();
   }
 
   // events emit

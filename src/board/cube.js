@@ -34,8 +34,6 @@ export class Cube extends Phaser.GameObjects.Container {
   }
 
   _buildText() {
-    // const { width, height } = this._bg;
-
     const text = this.scene.add.text(25, 25, this._value, {
       fontFamily: '"Arial Black"',
       color: "black",

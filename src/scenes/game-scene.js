@@ -6,7 +6,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   _buildMainView() {
-    const mainView = new MainView(this);
-    this.add.existing(mainView);
+    this._mainView = new MainView(this);
+    this.add.existing(this._mainView);
   }
 }
